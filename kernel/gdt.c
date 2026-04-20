@@ -2,7 +2,7 @@
 #include "gdt.h"
 
 static struct gdt_entry gdt[3];
-static struct gdt_descriptor desc;
+static struct gdt_descriptor gdt_desc;
 
 static void set_entry(int i, unsigned int base, unsigned int limit, unsigned char access, unsigned char flags){
     gdt[i].base_low    = base & 0xFFFF;
@@ -19,8 +19,8 @@ void gdt_init() {
     set_entry(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);   // kernel code
     set_entry(2, 0, 0xFFFFFFFF, 0x92, 0xCF);   // kernel data
 
-    desc.size    = sizeof(gdt) - 1;
-    desc.address = (unsigned int)gdt;
+    gdt_desc.size    = sizeof(gdt) - 1;
+    gdt_desc.address = (unsigned int)gdt;
 
     __asm__ volatile (
         "lgdt (%0)\n"
@@ -32,6 +32,6 @@ void gdt_init() {
         "mov %%ax, %%ss\n"
         "jmp $0x08, $.flush\n"
         ".flush:\n"
-        : : "r"(&desc) : "ax"
+        : : "r"(&gdt_desc) : "ax"
     );
 }
