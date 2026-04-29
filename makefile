@@ -3,11 +3,11 @@ CC     = cc
 LD     = ld
 CFLAGS = -m32 -ffreestanding -O2 -nostdlib -fno-builtin -fno-stack-protector
 
-# Auto-find all .c and .asm files in kernel/
-C_SRCS   := $(wildcard kernel/*.c)
-ASM_SRCS := $(wildcard kernel/*.asm)
+# Recursive source discovery
+C_SRCS   := $(shell find kernel -name "*.c")
+ASM_SRCS := $(shell find kernel -name "*.asm")
 
-# Turn them into .o files
+# Object files
 C_OBJS   := $(C_SRCS:.c=.o)
 ASM_OBJS := $(ASM_SRCS:.asm=.o)
 OBJS     := $(ASM_OBJS) $(C_OBJS)
@@ -17,11 +17,12 @@ all: myos.img
 boot/boot.bin: boot/boot.asm
 	$(ASM) -f bin boot/boot.asm -o boot/boot.bin
 
-kernel/%.o: kernel/%.asm
-	$(ASM) -f elf32 $< -o $@
-
-kernel/%.o: kernel/%.c
+# Generic rules (works for subdirectories)
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.asm
+	$(ASM) -f elf32 $< -o $@
 
 kernel/kernel.bin: $(OBJS) linker.ld
 	$(LD) -m elf_i386 -T linker.ld -o kernel/kernel.elf $(OBJS)
