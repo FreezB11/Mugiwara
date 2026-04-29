@@ -38,6 +38,39 @@ void isr_install() {
     set_idt(); // Load with ASM
 }
 
-void isr_handler(registers_t r) {
+#include "driver/vga.h"
 
+char* exception_messages[] = {
+    "Division By Zero",
+    "Debug",
+    "NMI",
+    "Breakpoint",
+    "Overflow",
+    "Bound Range",
+    "Invalid Opcode",
+    "Device Not Available",
+    "Double Fault",
+    "Coprocessor Overrun",
+    "Invalid TSS",
+    "Segment Not Present",
+    "Stack Fault",
+    "General Protection Fault",
+    "Page Fault",
+    "Reserved",
+    "FPU Error",
+    "Alignment Check",
+    "Machine Check",
+    "SIMD FP Exception",
+};
+
+void isr_handler(registers_t r) {
+    kprint("INTERRUPT: ");
+    
+    if (r.int_no < 20) {
+        kprint(exception_messages[r.int_no]);
+    } else {
+        kprint("Unknown");
+    }
+
+    kprint("\n");
 }
