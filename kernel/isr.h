@@ -2,7 +2,6 @@
 #pragma once
 
 #include "util.h"
-// #include "idt.h"
 
 /* ISRs reserved for CPU exceptions */
 extern void isr0();
@@ -38,13 +37,13 @@ extern void isr29();
 extern void isr30();
 extern void isr31();
 
-/* Struct which aggregates many registers */
 typedef struct {
-   u32 ds; /* Data segment selector */
-   u32 edi, esi, ebp, esp, ebx, edx, ecx, eax; /* Pushed by pusha. */
-   u32 int_no, err_code; /* Interrupt number and error code (if applicable) */
-   u32 eip, cs, eflags, useresp, ss; /* Pushed by the processor automatically */
+   u32 ds;
+   u32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
+   u32 int_no;
+   u32 err_code;
+   u32 eip, cs, eflags, useresp, ss;
 } registers_t;
 
 void isr_install();
-void isr_handler(registers_t r);
+void isr_handler(registers_t *r);  // pointer, not by value

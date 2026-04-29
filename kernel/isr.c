@@ -2,16 +2,16 @@
 #include "idt.h"
 
 void isr_install() {
-    set_idt_gate(0, (u32)isr0);
-    set_idt_gate(1, (u32)isr1);
-    set_idt_gate(2, (u32)isr2);
-    set_idt_gate(3, (u32)isr3);
-    set_idt_gate(4, (u32)isr4);
-    set_idt_gate(5, (u32)isr5);
-    set_idt_gate(6, (u32)isr6);
-    set_idt_gate(7, (u32)isr7);
-    set_idt_gate(8, (u32)isr8);
-    set_idt_gate(9, (u32)isr9);
+    set_idt_gate(0,  (u32)isr0);
+    set_idt_gate(1,  (u32)isr1);
+    set_idt_gate(2,  (u32)isr2);
+    set_idt_gate(3,  (u32)isr3);
+    set_idt_gate(4,  (u32)isr4);
+    set_idt_gate(5,  (u32)isr5);
+    set_idt_gate(6,  (u32)isr6);
+    set_idt_gate(7,  (u32)isr7);
+    set_idt_gate(8,  (u32)isr8);
+    set_idt_gate(9,  (u32)isr9);
     set_idt_gate(10, (u32)isr10);
     set_idt_gate(11, (u32)isr11);
     set_idt_gate(12, (u32)isr12);
@@ -35,12 +35,12 @@ void isr_install() {
     set_idt_gate(30, (u32)isr30);
     set_idt_gate(31, (u32)isr31);
 
-    set_idt(); // Load with ASM
+    set_idt();
 }
 
 #include "driver/vga.h"
 
-char* exception_messages[] = {
+static const char *exception_messages[] = {
     "Division By Zero",
     "Debug",
     "NMI",
@@ -63,14 +63,11 @@ char* exception_messages[] = {
     "SIMD FP Exception",
 };
 
-void isr_handler(registers_t r) {
+void isr_handler(registers_t *r) {
     kprint("INTERRUPT: ");
-    
-    if (r.int_no < 20) {
-        kprint(exception_messages[r.int_no]);
-    } else {
+    if (r->int_no < 20)
+        kprint(exception_messages[r->int_no]);
+    else
         kprint("Unknown");
-    }
-
     kprint("\n");
 }
