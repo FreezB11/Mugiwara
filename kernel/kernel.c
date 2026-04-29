@@ -1,15 +1,19 @@
 #include "gdt.h"
 #include "idt.h"
 #include "isr.h"
+#include "irq.h"
 #include "driver/vga.h"
 
 void kernel_main(void) {
     gdt_init();
     isr_install();
+    irq_install();
 
-    kprint("Kernel start\n");
+    extern void timer_init();
+    timer_init();
+    kprint("Kernel Alive\n");
 
-    asm volatile("int $0x0"); // Divide by zero interrupt
+    asm volatile("sti");
 
     for (;;);
 }
